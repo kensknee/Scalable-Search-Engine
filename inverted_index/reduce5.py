@@ -2,10 +2,11 @@
 """Reduce 5."""
 import sys
 import itertools
-import math
+
+
 # Goal in this job: get normalization factor
 # Need to loop through k terms and i documents
-def reduce_one_group(key, document):
+def reduce_one_group(document):
     """Reduce one group."""
     for word_info in document:
         term, idf_k, doc_id, tf_ik, norm = word_info.strip().split("\t", 4)
@@ -19,11 +20,10 @@ def keyfunc(line):
 
 def main():
     """Divide sorted lines into groups that share a key and reduce."""
-    for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group)
+    for _, group in itertools.groupby(sys.stdin, keyfunc):
+        reduce_one_group(group)
         # key is term
+
 
 if __name__ == "__main__":
     main()
-
-

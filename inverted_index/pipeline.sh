@@ -84,6 +84,7 @@ madoop \
   -output output7 \
   -mapper ./map7.py \
   -reducer ./reduce7.py \
+  -partitioner ./partition7.py \
   -num_partitions 3
 
 cp -r output7 inverted_index

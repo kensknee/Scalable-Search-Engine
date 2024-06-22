@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Map 6"""
+"""Map 6."""
 import sys
-import math
+
 
 # input: term, idf, doc_id, tf, norm
 for line in sys.stdin:

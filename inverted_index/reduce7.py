@@ -2,13 +2,12 @@
 """Reduce 7."""
 import sys
 import itertools
-import math
-# Goal in this job: get normalization factor
-# Need to loop through k terms and i documents
+
+
 def reduce_one_group(key, group):
     """Reduce one group."""
-    #print(f"key: {key}")
-    #{doc_id}\t{term}\t{tf_ik}\t{idf_k}\t{norm}
+    # print(f"key: {key}")
+    # {doc_id}\t{term}\t{tf_ik}\t{idf_k}\t{norm}
     term = key[0]
     idf = key[1]
     output = [term, idf]
@@ -17,13 +16,12 @@ def reduce_one_group(key, group):
         # term, idf, doc_id, tf, norm
         term2, idf2, doc_id, tf, norm = item.strip().split("\t", 4)
         if term == term2 and idf == idf2:
-            #print(f"{doc_id}\t{tf}\t{norm}")
+            # print(f"{doc_id}\t{tf}\t{norm}")
             output.append(doc_id)
             output.append(tf)
             output.append(norm)
 
-        #print(f"{term}\t{idf}\t{doc_id}\t{tf}\t{norm}")
-    #print(f"output: {output}")
+    # print(f"output: {output}")
     print(" ".join(output))
 
 
@@ -42,10 +40,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-

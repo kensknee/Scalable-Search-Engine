@@ -4,10 +4,8 @@
 import sys
 import itertools
 
-# for line in sys.stdin:
-#     print(line.strip())
 
-def reduce_one_group(key, group):
+def reduce_one_group(group):
     """Reduce one group."""
     for line in group:
         doc_id, content = line.strip().split("\t", 1)
@@ -15,19 +13,18 @@ def reduce_one_group(key, group):
         # Output: {doc_id}\t{content}
 
 
-
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""
     return line.partition("\t")[0]
+
 
 def main():
     """Divide sorted lines into groups that share a key and reduce."""
     # input is {doc_id}\t{content}
     # group by doc_id
-    for key, group in itertools.groupby(sys.stdin, keyfunc):
-        reduce_one_group(key, group)
+    for _, group in itertools.groupby(sys.stdin, keyfunc):
+        reduce_one_group(group)
+
 
 if __name__ == "__main__":
     main()
-
-

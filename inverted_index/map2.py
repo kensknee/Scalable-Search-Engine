@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Map 2"""
+"""Map 2."""
 import sys
 import re
-# Cleaning and Preprocessing Stage
 
-# Input: {doc_id}\t{content}
+
 stopwords = set()
-with open("stopwords.txt", 'r') as stopfile:
+with open("stopwords.txt", 'r', encoding="utf-8") as stopfile:
     for stopword in stopfile:
         stopwords.add(stopword.strip())
 
