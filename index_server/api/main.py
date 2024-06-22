@@ -2,10 +2,7 @@
 from flask import Flask, jsonify, request
 from .. import stopwords, inverted_index, pagerank, app
 
-#app = Flask(__name__)
-#import index.api
-
-print("+++RUNNING OUTSIDE+++")
+import math
 
 def compute_hits(query, weight=0.5):
     query_terms = query.split()
@@ -13,6 +10,23 @@ def compute_hits(query, weight=0.5):
 
     if not query_terms:
         return []
+
+    # Compute the query vector
+    query_vector = {}
+    for term in query_terms:
+        if term in query_vector:
+            query_vector[term] += 1
+        else:
+            query_vector[term] = 1
+
+    for term in query_vector:
+        if term in inverted_index:
+            postings = inverted_index[term]
+            idf = float(postings[0])
+            query_vector[term] *= idf
+
+    # Compute the norm of the query vector
+    query_norm = math.sqrt(sum(value ** 2 for value in query_vector.values()))
 
     docid_scores = {}
     docid_sets = []
@@ -23,21 +37,38 @@ def compute_hits(query, weight=0.5):
             docids_for_term = set()
             for i in range(1, len(postings), 3):
                 docid = int(postings[i])
-                score = float(postings[i + 2])
+                term_frequency = float(postings[i + 1])
+                idf = float(postings[0])
+                doc_norm = float(postings[i + 2])
+                doc_vector_entry = term_frequency * idf
                 if docid not in docid_scores:
-                    docid_scores[docid] = 0.0
-                docid_scores[docid] += weight * score
+                    print(docid)
+                    docid_scores[docid] = {
+                        'tfidf': 0.0,
+                        'norm': doc_norm
+                    }
+                docid_scores[docid]['tfidf'] += query_vector[term] * doc_vector_entry
                 docids_for_term.add(docid)
             docid_sets.append(docids_for_term)
         else:
             return []
-
     common_docids = set.intersection(*docid_sets)
-    filtered_docid_scores = {docid: docid_scores[docid] for docid in common_docids}
 
-    sorted_hits = sorted(filtered_docid_scores.items(), key=lambda item: pagerank.get(item[0], 0), reverse=True)
+    # Calculate the final score for each document
+    for docid in common_docids:
+        if query_norm != 0 and docid_scores[docid]['norm'] != 0:
+            tfidf_score = docid_scores[docid]['tfidf'] / (query_norm * docid_scores[docid]['norm'])
+        else:
+            tfidf_score = 0.0
+        pagerank_score = pagerank.get(docid, 0)
+        print(pagerank_score)
+        final_score = weight * pagerank_score + (1 - weight) * tfidf_score
+        docid_scores[docid] = final_score
 
-    hits = [{"docid": docid, "score": score} for docid, score in sorted_hits]
+    # Sort the documents by final score
+    sorted_hits = sorted(common_docids, key=lambda docid: docid_scores[docid], reverse=True)
+
+    hits = [{"docid": docid, "score": docid_scores[docid]} for docid in sorted_hits]
 
     return hits
 
@@ -53,14 +84,13 @@ def index():
 def get_hits():
     query = request.args.get('q', '')
     weight = float(request.args.get('w', 0.5))
-    
+
     if not query:
         return jsonify({"error": "Missing query parameter 'q'"}), 400
 
     hits = compute_hits(query, weight)
-    
+
     return jsonify({"hits": hits})
 
 if __name__ == '__main__':
-    print("+++RUNNING+++")
     app.run(debug=True)
