@@ -49,3 +49,41 @@ madoop \
   -output output2 \
   -mapper ./map2.py \
   -reducer ./reduce2.py
+
+# Job 3
+madoop \
+  -input output2 \
+  -output output3 \
+  -mapper ./map3.py \
+  -reducer ./reduce3.py
+
+# Job 4
+madoop \
+  -input output3 \
+  -output output4 \
+  -mapper ./map4.py \
+  -reducer ./reduce4.py
+
+# Job 5
+madoop \
+  -input output4 \
+  -output output5 \
+  -mapper ./map5.py \
+  -reducer ./reduce5.py
+
+# Job 6
+madoop \
+  -input output5 \
+  -output output6 \
+  -mapper ./map6.py \
+  -reducer ./reduce6.py
+
+# Job 7
+madoop \
+  -input output6 \
+  -output output7 \
+  -mapper ./map7.py \
+  -reducer ./reduce7.py \
+  -num_partitions 3
+
+cp -r output7 inverted_index
